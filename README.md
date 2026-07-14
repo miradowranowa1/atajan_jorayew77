@@ -1,2 +1,2 @@
 120298# TikTok-Reset-Password
-Tiktok Atajan_jorayew77
+Tiktok Atajan_jorayew7
