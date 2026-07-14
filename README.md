@@ -1,2 +1,2 @@
 120298# TikTok-Reset-Password
-Tiktok Python Script
+Tiktok Atajan_jorayew77
