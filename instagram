@@ -1,0 +1,241 @@
+## 
+ InstagramOSINT.py — API Usage Guide
+
+`InstagramOSINT.py` is designed to be imported as a Python module into your own scripts and applications. It exposes a simple class-based interface that scrapes and returns publicly available Instagram profile data.
+
+> **Requires:** Python 3.6+
+> **Install deps first:** `pip3 install -r requirements.txt`
+
+---
+
+## Import
+
+```python
+from InstagramOSINT import *
+```
+
+---
+
+## Creating an Instance
+
+Pass the target Instagram username to the constructor. Scraping runs **automatically** at instantiation — no separate setup step needed.
+
+```python
+instagram = InstagramOSINT(username='target_username')
+```
+
+The moment this line executes, the tool fetches and parses the profile. All data is immediately available on the object.
+
+---
+
+## Methods & Properties
+
+### `instagram.profile_data`
+
+Returns the full profile as a Python dictionary.
+
+```python
+data = instagram.profile_data
+print(data)
+```
+
+**Example output:**
+```python
+{
+    'Username': 'nasa',
+    'Profile Name': 'NASA',
+    'URL': 'https://www.instagram.com/nasa/',
+    'Followers': '97000000',
+    'Following': '62',
+    'Number of Posts': '3900',
+    'Bio': 'Explore the universe and discover our home planet.',
+    'Profile Picture URL': 'https://instagram.fxxx.jpg',
+    'Is Business Account?': True,
+    'Connected to FB?': True,
+    'External URL': 'https://www.nasa.gov/',
+    'Joined Recently?': False,
+    'Business Category Name': 'Science, Technology & Engineering',
+    'Is Private?': False,
+    'Is Verified?': True
+}
+```
+
+---
+
+### `instagram['key']` — Index Access
+
+Access individual fields using dictionary-style bracket notation.
+
+```python
+print(instagram['Username'])
+print(instagram['Profile Name'])
+print(instagram['Followers'])
+print(instagram['Following'])
+print(instagram['Number of Posts'])
+print(instagram['Bio'])
+print(instagram['Profile Picture URL'])
+print(instagram['Is Business Account?'])
+print(instagram['Connected to FB?'])
+print(instagram['External URL'])
+print(instagram['Joined Recently?'])
+print(instagram['Business Category Name'])
+print(instagram['Is Private?'])
+print(instagram['Is Verified?'])
+```
+
+**All valid keys:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `'Username'` | str | Account handle |
+| `'Profile Name'` | str | Display name |
+| `'URL'` | str | Full profile URL |
+| `'Followers'` | str | Follower count |
+| `'Following'` | str | Following count |
+| `'Number of Posts'` | str | Total posts |
+| `'Bio'` | str | Profile biography |
+| `'Profile Picture URL'` | str | Direct URL to avatar image |
+| `'Is Business Account?'` | bool | Business account flag |
+| `'Connected to FB?'` | bool | Facebook link flag |
+| `'External URL'` | str | Bio link (if any) |
+| `'Joined Recently?'` | bool | New account flag |
+| `'Business Category Name'` | str | Business category label |
+| `'Is Private?'` | bool | Private account flag |
+| `'Is Verified?'` | bool | Verified badge flag |
+
+---
+
+### `instagram.print_profile_data()`
+
+Prints a formatted summary of all collected fields to the terminal.
+
+```python
+instagram.print_profile_data()
+```
+
+Useful for quick inspection without manually iterating the dictionary.
+
+---
+
+### `instagram.save_data()`
+
+Saves the profile data to a `.txt` file on disk. The tool creates a local directory named after the username and writes the data as serialized JSON inside it.
+
+```python
+instagram.save_data()
+# Creates: ./nasa/nasa.txt  (or similar path)
+```
+
+---
+
+### `instagram.scrape_posts()`
+
+Downloads publicly available photos from the profile into the local username directory.
+
+```python
+instagram.scrape_posts()
+# Downloads images to: ./nasa/
+```
+
+> Only works on public accounts. Private accounts will yield no photos.
+
+---
+
+### `repr(instagram)` — Debug Representation
+
+```python
+print(repr(instagram))
+# Output: Current Username: nasa
+```
+
+---
+
+## Complete Working Example
+
+```python
+from InstagramOSINT import *
+
+# Instantiate — scraping runs automatically
+instagram = InstagramOSINT(https://www.instagram.com/jorayev_atajan77?igsh=bTU5dmlraDA3M2J6nasa')
+
+# --- Access individual fields ---
+print("Username:      ", instagram['Username'])
+print("Display Name:  ", instagram['Profile Name'])
+print("Followers:     ", instagram['Followers'])
+print("Following:     ", instagram['Following'])
+print("Posts:         ", instagram['Number of Posts'])
+print("Bio:           ", instagram['Bio'])
+print("External URL:  ", instagram['External URL'])
+print("Verified:      ", instagram['Is Verified?'])
+print("Private:       ", instagram['Is Private?'])
+print("Business:      ", instagram['Is Business Account?'])
+print("On Facebook:   ", instagram['Connected to FB?'])
+print("New Account:   ", instagram['Joined Recently?'])
+print("Profile Pic:   ", instagram['Profile Picture URL'])
+
+# --- Print everything at once ---
+instagram.print_profile_data()
+
+# --- Save to disk ---
+instagram.save_data()
+
+# --- Download public photos ---
+instagram.scrape_posts()
+```
+
+---
+
+## Using in a Custom Script
+
+Because `InstagramOSINT.py` is a plain importable module, you can embed it in any Python workflow:
+
+```python
+from InstagramOSINT import *
+
+usernames = ['username1', 'username2', 'username3']
+
+for user in usernames:
+    profile = InstagramOSINT(username=user)
+    print(f"{user}: {profile['Followers']} followers | Verified: {profile['Is Verified?']}")
+    profile.save_data()
+```
+
+---
+
+## Accessing the Raw Dictionary for Further Processing
+
+```python
+from InstagramOSINT import *
+import json
+
+instagram = InstagramOSINT('https://www.instagram.com/jorayev_atajan77?igsh=bTU5dmlraDA3M2J6 nasa')
+
+# Get the dict
+data = instagram.profile_data
+
+# Convert to JSON string
+json_string = json.dumps(data, indent=2)
+print(json_string)
+
+# Write to your own file
+with open('nasa_profile.json', 'w') as f:
+    json.dump(data, f, indent=2)
+
+# Check a flag conditionally
+if instagram['Is Verified?']:
+    print("This is a verified account.")
+
+if instagram['Is Private?']:
+    print("Account is private — photos cannot be downloaded.")
+else:
+    instagram.scrape_posts()
+```
+
+---
+
+## Important Notes
+
+- **`InstagramOSINT.py` is the module** — do not run it directly from the command line. Use `main.py` for CLI use.
+- **Scraping is triggered at instantiation** — there is no lazy-load option; the HTTP request fires when you call `InstagramOSINT(username=https://www.instagram.com/jorayev_atajan77?igsh=bTU5dmlraDA3M2J6...)`.
+- **The repo is archived (June 2024)** — Instagram's internal page structure has changed significantly. The tool may return incomplete or no data against the current Instagram site without modification.
+- **Only public data** — no login is required, and private account content is not accessible.
