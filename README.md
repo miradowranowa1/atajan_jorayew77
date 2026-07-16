@@ -1,2 +1,1 @@
-151988904554 
-Atajan_jorayew7
+tiktok-reset.py
